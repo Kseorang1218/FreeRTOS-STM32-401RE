@@ -18,7 +18,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -56,7 +58,62 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void vPrintString(const char *str) {
+//	vTaskSuspendScheduler();
+    HAL_UART_Transmit(&huart2, (uint8_t*)str, strlen(str), HAL_MAX_DELAY);
+//    xTaskResumeScheduler();
+}
 
+static const char *pcTextForTask1 = "<Task 1> is running\r\n";
+static const char *pcTextForTask2 = "<Task 2> is running\r\n";
+void vTaskFunction(void *pvParameters){
+	char *pcTaskName;
+	const TickType_t xDelay250ms = pdMS_TO_TICKS(250);
+	pcTaskName = (char *)pvParameters;
+	for(;;){
+		vPrintString(pcTaskName);
+		vTaskDelay(xDelay250ms);
+	}
+}
+/* USER CODE BEGIN 4 */
+void vApplicationMallocFailedHook(void) {
+    while(1);
+}
+
+void vApplicationIdleHook(void) {
+    // Optional: Idle task hook
+}
+
+void vApplicationTickHook(void) {
+    // Optional: Tick hook
+}
+
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName) {
+    while(1);
+}
+
+void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer,
+                                   StackType_t **ppxIdleTaskStackBuffer,
+                                   uint32_t *pulIdleTaskStackSize ) {
+  static StaticTask_t xIdleTaskTCB;
+  static StackType_t uxIdleTaskStack[ configMINIMAL_STACK_SIZE ];
+
+  *ppxIdleTaskTCBBuffer = &xIdleTaskTCB;
+  *ppxIdleTaskStackBuffer = uxIdleTaskStack;
+  *pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
+}
+
+void vApplicationGetTimerTaskMemory( StaticTask_t **ppxTimerTaskTCBBuffer,
+                                    StackType_t **ppxTimerTaskStackBuffer,
+                                    uint32_t *pulTimerTaskStackSize ) {
+  static StaticTask_t xTimerTaskTCB;
+  static StackType_t uxTimerTaskStack[ configTIMER_TASK_STACK_DEPTH ];
+
+  *ppxTimerTaskTCBBuffer = &xTimerTaskTCB;
+  *ppxTimerTaskStackBuffer = uxTimerTaskStack;
+  *pulTimerTaskStackSize = configTIMER_TASK_STACK_DEPTH;
+}
+/* USER CODE END 4 */
 /* USER CODE END 0 */
 
 /**
@@ -90,7 +147,9 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  xTaskCreate(vTaskFunction, "Task 1", 1000, (void*)pcTextForTask1, 1, NULL);
+  xTaskCreate(vTaskFunction, "Task 2", 1000, (void*)pcTextForTask2, 2, NULL);
+  vTaskStartScheduler();
   /* USER CODE END 2 */
 
   /* Infinite loop */
