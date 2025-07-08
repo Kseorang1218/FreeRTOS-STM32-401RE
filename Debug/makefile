@@ -61,8 +61,8 @@ all: main-build
 main-build: RS_test.elf secondary-outputs
 
 # Tool invocations
-RS_test.elf RS_test.map: $(OBJS) $(USER_OBJS) C:\Users\likelike07\STM32CubeIDE\workspace_1.18.1\RS_test\STM32F401RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "RS_test.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\likelike07\STM32CubeIDE\workspace_1.18.1\RS_test\STM32F401RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="RS_test.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+RS_test.elf RS_test.map: $(OBJS) $(USER_OBJS) C:\Users\user\Downloads\RS-STM32-401RE-main\RS-STM32-401RE-main\STM32F401RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "RS_test.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\user\Downloads\RS-STM32-401RE-main\RS-STM32-401RE-main\STM32F401RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="RS_test.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
